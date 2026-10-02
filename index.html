@@ -535,14 +535,12 @@ $("flip").onclick=()=>{
   }
 };
 $("again").onclick=()=>{if(S.mode!=="pvp"){goAgain();return}S.votes[S.me]=true;$("again").textContent="相手待ち";send({type:"vote",who:S.me});if(S.host&&S.votes[1]&&S.votes[2]){send({type:"goAgain"});goAgain()}};
-bootChat(function(text){try{if(S.conn)S.conn.send({type:"chat",text:text})}catch(e){}});
+bootChat(function(text){try{if(S.conn&&S.conn.open)S.conn.send({type:"chat",text:text})}catch(e){}});
 $("home").onclick=()=>{saveShinriHub();resetBoard();show("mode");$("mode").style.display="flex"};
 $("retry").onclick=()=>$("ask").classList.add("on");
 $("askYes").onclick=()=>{$("ask").classList.remove("on");$("home").onclick()};
 $("askNo").onclick=()=>$("ask").classList.remove("on");
 </script>
-<button id="chatBtn" type="button">チャット</button>
-<div id="chatPanel"><input id="chatIn" maxlength="40" placeholder="メッセージ"/><div class="row"><button type="button" id="chatSend">送信</button></div></div>
 <div id="bubbles"></div>
 
 </body></html>
