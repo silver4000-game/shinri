@@ -178,7 +178,7 @@ const LAB=["100","300","500","×2","WIN"];
 const S={mode:null,me:1,host:true,row:{1:[null,null,null,null,null],2:[null,null,null,null,null]},open:[0,0,0,0,0],hand:[1,2,3,4,5],sel:null,phase:"place",ready:{1:false,2:false},idx:-1,roundPts:{1:0,2:0},totals:[0,0,0],stakes:rollStakes(),mult:{1:1,2:1},peer:null,conn:null,votes:{},flipVote:{1:false,2:false},last:null,hist:[],histI:0};
 function hubSave(game,n){try{const o=JSON.parse(localStorage.getItem("hubPts")||"{}");o[game]=n|0;localStorage.setItem("hubPts",JSON.stringify(o));}catch(e){}}
 function saveShinriHub(){hubSave("shinri",(S.totals&&S.totals[S.me])||0)}
-addEventListener("pagehide",saveShinriHub);addEventListener("visibilitychange",()=>{if(document.hidden)saveShinriHub()});
+addEventListener("pagehide",function(){try{if(S.conn&&S.conn.open)S.conn.send({type:"bye"})}catch(e){}saveShinriHub()});addEventListener("visibilitychange",()=>{if(document.hidden)saveShinriHub()});
 
 const CHAT_QUICK=["あと何回やる？","あと3回","あと5回","まだやめない","笑","何回戦までやる？","まじか"];
 function bubbleHost(mine){
@@ -316,7 +316,7 @@ function cpuPlace(){
   S.row[2]=nums;S.ready[2]=true;
 }
 function bothReady(){return S.ready[1]&&S.ready[2]}
-function startFlip(){clearFx();S.phase="flip";S.idx=-1;S.open=[0,0,0,0,0];S.roundPts={1:0,2:0};S.colW=[0,0,0,0,0];S.mult={1:1,2:1};S.resolvedWin=false;S.busy=false;S.flipVote={1:false,2:false};render()}
+function startFlip(){if(S.phase==="flip"||S.phase==="result")return;clearFx();S.phase="flip";S.idx=-1;S.open=[0,0,0,0,0];S.roundPts={1:0,2:0};S.colW=[0,0,0,0,0];S.mult={1:1,2:1};S.resolvedWin=false;S.busy=false;S.flipVote={1:false,2:false};render()}
 function lockPlace(){
   if(S.row[S.me].some(v=>v==null)||S.ready[S.me])return;
   S.ready[S.me]=true;
@@ -436,16 +436,17 @@ function startMatch(){resetBoard();if(!(S.mode==="pvp"&&!S.host)){S.stakes=rollS
 function send(a){if(S.conn&&S.conn.open)S.conn.send(a)}
 function onNet(m){
   if(!m)return;
+  if(m.type==="bye"){shinriOppGone();return}
   if(m.type==="chat"){showBubble(m.text||"",false);return}
   if(m.type==="placed"){S.row[S.me===1?2:1]=m.row;S.ready[S.me===1?2:1]=true;if(bothReady()){if(S.host)send({type:"goFlip"});startFlip()}else render();return}
   if(m.type==="stakes"){S.stakes=m.stakes;render();spinStakeLabs();return}
-  if(m.type==="goFlip"){startFlip();return}
+  if(m.type==="goFlip"){if(S.phase==="flip"||S.phase==="result"||(S.idx|0)>=0)return;startFlip();return}
   if(m.type==="flipVote"){S.flipVote=S.flipVote||{1:false,2:false};S.flipVote[S.me===1?2:1]=true;if(S.flipVote[1]&&S.flipVote[2]){S.flipVote={1:false,2:false};if(S.idx>=4){if(S.host)send({type:"goResult"});endRound()}else if(S.host)doFlip()}return}
   if(m.type==="goResult"){endRound();return}
   if(m.type==="wantFlip"&&S.host){doFlip();return}
   if(m.type==="flipTo"){if(S.host)return;if(m.idx===S.idx)return;S.idx=m.idx;S.open[S.idx]=1;sfxFlip();render();setTimeout(()=>{applyCol(S.idx);S.busy=false;render()},280);return}
-  if(m.type==="vote"){S.votes[m.who]=true;if(S.votes[1]&&S.votes[2]){send({type:"goAgain"});goAgain()}return}
-  if(m.type==="goAgain") goAgain();
+  if(m.type==="vote"){S.votes[m.who]=true;if(S.host&&S.votes[1]&&S.votes[2]){send({type:"goAgain"});goAgain()}return}
+  if(m.type==="goAgain"){if(!S.host)goAgain();return}
 }
 function paintLast(){
   const rec=(S.hist||[])[S.histI]; if(!rec)return;
@@ -479,10 +480,43 @@ if($("lastPrev")) $("lastPrev").onclick=e=>{e.stopPropagation();if(S.histI>0){S.
 if($("lastNext")) $("lastNext").onclick=e=>{e.stopPropagation();if(S.histI<S.hist.length-1){S.histI++;paintLast()}};
 if($("lastClose")) $("lastClose").onclick=e=>{e.stopPropagation();$("lastView").classList.remove("on")};
 
-function goAgain(){S.votes={};startMatch()}
+function goAgain(){if(S.phase!=="result")return;S.votes={};startMatch()}
+function watchShinri(conn){
+  const epoch=S.netEpoch||0;
+  let opened=false;
+  S.conn=conn;
+  conn.on("data",onNet);
+  conn.on("open",function(){ opened=true; });
+  conn.on("close",function(){ if((S.netEpoch||0)!==epoch || S.netDead || !opened || S.conn!==conn) return; shinriOppGone(); });
+}
+function shinriHangup(tell){
+  S.netEpoch=(S.netEpoch||0)+1;
+  try{ if(tell&&S.conn&&S.conn.open) S.conn.send({type:"bye"}); }catch(e){}
+  const c=S.conn,p=S.peer; S.conn=null; S.peer=null;
+  try{ if(c) c.close(); }catch(e){}
+  try{ if(p) p.destroy(); }catch(e){}
+}
+function shinriOppGone(){
+  if(S.netDead) return;
+  S.netDead=true;
+  S.netEpoch=(S.netEpoch||0)+1;
+  const c=S.conn,p=S.peer; S.conn=null; S.peer=null;
+  try{ if(c) c.close(); }catch(e){}
+  try{ if(p) p.destroy(); }catch(e){}
+  const live=["game","result","first"].some(id=>{const el=$(id);return el&&el.classList.contains("on")});
+  if(!live){ if($("roomSt")) $("roomSt").textContent="相手が切断しました"; return; }
+  $("rTitle").textContent="切断";
+  $("rTitle").style.color="#ff5a6a";
+  $("rCalc").textContent="相手との接続が切れました";
+  $("rPts").textContent="";
+  $("again").style.display="none";
+  $("home").style.display="";
+  show("result");
+}
 function boot(host,code){
   $("roomSt").textContent="接続中…";
   const opts={host:"0.peerjs.com",port:443,path:"/",secure:true,debug:0,config:{iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun1.l.google.com:19302"},{urls:"stun:global.stun.twilio.com:3478"}]}};
+  S.netEpoch=(S.netEpoch||0)+1; S.netDead=false;
   if(S.peer)try{S.peer.destroy()}catch(e){}
   const peer=new Peer(host?pid(code):undefined,opts);S.peer=peer;
   peer.on("error",e=>{
@@ -494,15 +528,14 @@ function boot(host,code){
   peer.on("open",()=>{
     if(host){
       $("roomSt").textContent="合言葉 "+code+" で待機中";
-      peer.on("connection",conn=>{S.conn=conn;conn.on("data",onNet);conn.on("open",()=>{startMatch();send({type:"hello"})})});
+      peer.on("connection",conn=>{watchShinri(conn);conn.on("open",()=>{startMatch();send({type:"hello"})})});
     } else {
       let tries=0;
       const tryJoin=()=>{
         tries++;
         $("roomSt").textContent=tries>1?("入室を再試行中… "+tries):"部屋に接続中…";
         const conn=peer.connect(pid(code),{reliable:true});
-        S.conn=conn;
-        conn.on("data",onNet);
+        watchShinri(conn);
         conn.on("open",()=>{$("roomSt").textContent="接続した";startMatch()});
         conn.on("error",()=>{
           if(tries<8) setTimeout(tryJoin,700);
@@ -517,7 +550,7 @@ function boot(host,code){
 document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{S.mode=b.dataset.mode;$("mode").style.display="none";if(S.mode==="pvp")show("room");else{S.me=1;S.host=true;startMatch()}});
 $("btnRules").onclick=()=>{$("mode").style.display="none";show("rules")};
 $("rulesBack").onclick=()=>{show("mode");$("mode").style.display="flex"};
-$("roomBack").onclick=()=>{show("mode");$("mode").style.display="flex"};
+$("roomBack").onclick=()=>{if(S.mode==="pvp")shinriHangup(true);show("mode");$("mode").style.display="flex"};
 $("mk").onclick=()=>{const c=$("code").value.trim().replace(/\s+/g,"");if([...c].length<3){$("roomSt").textContent="3文字以上";return}S.host=true;S.me=1;boot(true,c)};
 $("jn").onclick=()=>{const c=$("code").value.trim().replace(/\s+/g,"");if([...c].length<3){$("roomSt").textContent="3文字以上";return}S.host=false;S.me=2;boot(false,c)};
 $("okPlace").onclick=lockPlace;
@@ -536,9 +569,9 @@ $("flip").onclick=()=>{
     else if(S.host) doFlip();
   }
 };
-$("again").onclick=()=>{if(S.mode!=="pvp"){goAgain();return}S.votes[S.me]=true;$("again").textContent="相手待ち";send({type:"vote",who:S.me});if(S.host&&S.votes[1]&&S.votes[2]){send({type:"goAgain"});goAgain()}};
+$("again").onclick=()=>{if(S.mode!=="pvp"){goAgain();return}if(S.votes[S.me])return;S.votes[S.me]=true;$("again").textContent="相手待ち";send({type:"vote",who:S.me});if(S.host&&S.votes[1]&&S.votes[2]){send({type:"goAgain"});goAgain()}};
 bootChat(function(text){try{if(S.conn&&S.conn.open)S.conn.send({type:"chat",text:text})}catch(e){}});
-$("home").onclick=()=>{saveShinriHub();resetBoard();show("mode");$("mode").style.display="flex"};
+$("home").onclick=()=>{saveShinriHub();if(S.mode==="pvp")shinriHangup(true);resetBoard();show("mode");$("mode").style.display="flex"};
 $("retry").onclick=()=>$("ask").classList.add("on");
 $("askYes").onclick=()=>{$("ask").classList.remove("on");$("home").onclick()};
 $("askNo").onclick=()=>$("ask").classList.remove("on");
