@@ -2,15 +2,47 @@
 <html lang="ja"><head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<!-- layout: safari-bar-lock-20261004 -->
+<meta name="shinri-rev" content="20261004d-safari-lock">
+<script>
+(function(){
+  var nav=navigator, mm=window.matchMedia;
+  function q(s){return !!(mm&&mm.call(window,s).matches)}
+  var hs=nav.standalone===true||q('(display-mode: standalone)')||q('(display-mode: fullscreen)')||q('(display-mode: minimal-ui)');
+  if(!hs||!(nav.maxTouchPoints>0)) return;
+  var shortSide=Math.min(screen.width,screen.height);
+  var longSide=Math.max(screen.width,screen.height);
+  var portrait=window.innerHeight>=window.innerWidth;
+  var bar=(shortSide<520&&longSide>=812)?(portrait?83:50):(portrait?50:44);
+  document.documentElement.classList.add('no-bar');
+  document.documentElement.style.setProperty('--safari-bar', bar+'px');
+})();
+</script>
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261004d">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=20261004d">
 <title>究極の心理戦</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap&v=20261004d" rel="stylesheet">
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
 html,body{margin:0;height:100%;height:100svh;height:100dvh;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:radial-gradient(ellipse at center,#286848,#142c22);color:#f4ead0;overflow:hidden}
 #app{height:100%;height:100svh;height:100dvh;position:relative}
+
+/* Home screen has no white Safari bar, so the viewport is taller than Safari.
+   Pin #app to the Safari-with-bar height. Extra space stays the page background.
+   --safari-bar: 83px on home-indicator iPhones, 50px on older phones. */
+html.no-bar #app{height:calc(100dvh - var(--safari-bar, 83px));max-height:calc(100dvh - var(--safari-bar, 83px))}
+html.no-bar #chatBtn{bottom:calc(18px + var(--safari-bar, 83px))}
+html.no-bar #chatPanel{bottom:calc(58px + var(--safari-bar, 83px))}
+
+@media (display-mode: standalone) and (pointer: coarse),
+       (display-mode: fullscreen) and (pointer: coarse),
+       (display-mode: minimal-ui) and (pointer: coarse){
+  #app{height:calc(100dvh - var(--safari-bar, 83px));max-height:calc(100dvh - var(--safari-bar, 83px))}
+  #chatBtn{bottom:calc(18px + var(--safari-bar, 83px))}
+  #chatPanel{bottom:calc(58px + var(--safari-bar, 83px))}
+
+}
 section{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:18px 14px;padding-top:max(12px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom))}
 section.on,#mode{display:flex}
 #mode.on,#mode{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0;width:100%}
