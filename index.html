@@ -32,6 +32,12 @@ html,body{margin:0;height:100%;height:100svh;height:100dvh;font-family:"Hiragino
    Pin #app to the Safari-with-bar height. Extra space stays the page background.
    --safari-bar: 83px on home-indicator iPhones, 50px on older phones. */
 html.no-bar #app{height:calc(100dvh - var(--safari-bar, 83px));max-height:calc(100dvh - var(--safari-bar, 83px))}
+html.no-bar:has(#first.on),
+html.no-bar:has(#first.on) body,
+html.no-bar:has(#result.on),
+html.no-bar:has(#result.on) body{background:#0a100c}
+html.no-bar #first.on,
+html.no-bar #result.on{background:#0a100c}
 html.no-bar #chatBtn{bottom:calc(18px + var(--safari-bar, 83px))}
 html.no-bar #chatPanel{bottom:calc(58px + var(--safari-bar, 83px))}
 
@@ -39,6 +45,12 @@ html.no-bar #chatPanel{bottom:calc(58px + var(--safari-bar, 83px))}
        (display-mode: fullscreen) and (pointer: coarse),
        (display-mode: minimal-ui) and (pointer: coarse){
   #app{height:calc(100dvh - var(--safari-bar, 83px));max-height:calc(100dvh - var(--safari-bar, 83px))}
+  html:has(#first.on),
+  html:has(#first.on) body,
+  html:has(#result.on),
+  html:has(#result.on) body{background:#0a100c}
+  #first.on,
+  #result.on{background:#0a100c}
   #chatBtn{bottom:calc(18px + var(--safari-bar, 83px))}
   #chatPanel{bottom:calc(58px + var(--safari-bar, 83px))}
 
