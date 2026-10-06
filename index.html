@@ -3,7 +3,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <!-- layout: safari-bar-lock-20261004 -->
-<meta name="shinri-rev" content="20261004d-safari-lock">
+<meta name="shinri-rev" content="20261007a-sfx-stop">
 <script>
 (function(){
   var nav=navigator, mm=window.matchMedia;
@@ -18,8 +18,8 @@
   document.documentElement.style.setProperty('--safari-bar', bar+'px');
 })();
 </script>
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261004d">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=20261004d">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261007a">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=20261007a">
 <title>究極の心理戦</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap&v=20261004d" rel="stylesheet">
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -190,7 +190,36 @@ input{width:min(92vw,280px);padding:12px;border-radius:12px;border:1px solid #e8
 <script>
 const $=id=>document.getElementById(id);
 let audioCtx=null;
-function ac(){if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==="suspended")audioCtx.resume();return audioCtx}
+let gameGen=0;
+const gameTimers=new Set();
+function bumpGameGen(){gameGen++}
+function alive(g){return g===gameGen}
+function clearGameTimers(){
+  gameTimers.forEach(id=>{try{clearTimeout(id)}catch(e){}try{clearInterval(id)}catch(e){}});
+  gameTimers.clear();
+}
+function later(fn,ms){
+  const g=gameGen;
+  const id=setTimeout(()=>{gameTimers.delete(id);if(!alive(g))return;try{fn()}catch(e){}},ms);
+  gameTimers.add(id);return id;
+}
+function stopAudio(){
+  try{
+    const old=audioCtx;audioCtx=null;
+    if(old){
+      try{if(old.state!=="closed")old.suspend()}catch(e){}
+      try{if(old.state!=="closed")old.close()}catch(e){}
+    }
+  }catch(e){}
+}
+function hardStopSounds(){
+  bumpGameGen();
+  clearGameTimers();
+  stopAudio();
+  try{S.spinLabs=false;S.busy=false}catch(e){}
+  try{banner("")}catch(e){}
+}
+function ac(){if(!audioCtx||audioCtx.state==="closed")audioCtx=new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==="suspended")audioCtx.resume();return audioCtx}
 function tone(freq,dur,type,gain,slide){const ctx=ac();const o=ctx.createOscillator();const g=ctx.createGain();o.type=type||"square";o.frequency.setValueAtTime(freq,ctx.currentTime);if(slide)o.frequency.exponentialRampToValueAtTime(slide,ctx.currentTime+dur);g.gain.setValueAtTime(gain||0.08,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+dur)}
 function sfxTick(){
   const ctx=ac();
@@ -205,7 +234,7 @@ function sfxTick(){
 }
 function sfxPlace(){tone(320,0.07,"triangle",0.07,420);tone(180,0.09,"sine",0.04)}
 function sfxFlip(){tone(520,0.08,"triangle",0.07,880)}
-function sfxWinJ(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,0.28,"square",0.07),i*120))}
+function sfxWinJ(){[523,659,784,1046].forEach((f,i)=>later(()=>tone(f,0.28,"square",0.07),i*120))}
 
 function pick(arr){const r=Math.random();return r<0.60?arr[0]:r<0.90?arr[1]:arr[2]}
 function rollStakes(){
@@ -405,7 +434,7 @@ function doFlip(){
     return;
   }
   S.busy=true;S.idx+=1;S.open[S.idx]=1;sfxFlip();render();
-  setTimeout(()=>{
+  later(()=>{
     applyCol(S.idx);
     S.busy=false;
     render();
@@ -452,6 +481,7 @@ function paintLabs(arr){
   $("labMe").innerHTML=arr.map(s=>"<div class='lab'>"+labOf(s)+"</div>").join("");
 }
 function spinStakeLabs(){
+  const g=gameGen;
   S.spinLabs=true;
   S.phase="waitStake";
 banner("配当抽選中",true);
@@ -461,16 +491,18 @@ banner("配当抽選中",true);
   function spinCol(col, done){
     let i=0, delay=40;
     const tick=()=>{
+      if(!alive(g)) return;
       shown[col]=pools[col][i%pools[col].length];
       paintLabs(shown);sfxTick();
       i++;
       if(i>=12){ shown[col]=S.stakes[col]; paintLabs(shown); done(); return; }
       delay=Math.min(220, delay*1.22);
-      setTimeout(tick, delay);
+      later(tick, delay);
     };
     tick();
   }
   spinCol(0,()=>spinCol(1,()=>spinCol(2,()=>spinCol(3,()=>{
+    if(!alive(g)) return;
     S.spinLabs=false; S.phase="place";
 banner("配置スタート");
     render();
@@ -488,7 +520,7 @@ function onNet(m){
   if(m.type==="flipVote"){S.flipVote=S.flipVote||{1:false,2:false};S.flipVote[S.me===1?2:1]=true;if(S.flipVote[1]&&S.flipVote[2]){S.flipVote={1:false,2:false};if(S.idx>=4){if(S.host)send({type:"goResult"});endRound()}else if(S.host)doFlip()}return}
   if(m.type==="goResult"){endRound();return}
   if(m.type==="wantFlip"&&S.host){doFlip();return}
-  if(m.type==="flipTo"){if(S.host)return;if(m.idx===S.idx)return;S.idx=m.idx;S.open[S.idx]=1;sfxFlip();render();setTimeout(()=>{applyCol(S.idx);S.busy=false;render()},280);return}
+  if(m.type==="flipTo"){if(S.host)return;if(m.idx===S.idx)return;S.idx=m.idx;S.open[S.idx]=1;sfxFlip();render();later(()=>{applyCol(S.idx);S.busy=false;render()},280);return}
   if(m.type==="vote"){S.votes[m.who]=true;if(S.host&&S.votes[1]&&S.votes[2]){send({type:"goAgain"});goAgain()}return}
   if(m.type==="goAgain"){if(!S.host)goAgain();return}
 }
@@ -542,6 +574,7 @@ function shinriHangup(tell){
 }
 function shinriOppGone(){
   if(S.netDead) return;
+  hardStopSounds();
   S.netDead=true;
   S.netEpoch=(S.netEpoch||0)+1;
   const c=S.conn,p=S.peer; S.conn=null; S.peer=null;
@@ -594,7 +627,7 @@ function boot(host,code){
 document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{S.mode=b.dataset.mode;$("mode").style.display="none";if(S.mode==="pvp")show("room");else{S.me=1;S.host=true;startMatch()}});
 $("btnRules").onclick=()=>{$("mode").style.display="none";show("rules")};
 $("rulesBack").onclick=()=>{show("mode");$("mode").style.display="flex"};
-$("roomBack").onclick=()=>{if(S.mode==="pvp")shinriHangup(true);show("mode");$("mode").style.display="flex"};
+$("roomBack").onclick=()=>{hardStopSounds();if(S.mode==="pvp")shinriHangup(true);show("mode");$("mode").style.display="flex"};
 $("mk").onclick=()=>{const c=$("code").value.trim().replace(/\s+/g,"");if([...c].length<3){$("roomSt").textContent="3文字以上";return}S.host=true;S.me=1;boot(true,c)};
 $("jn").onclick=()=>{const c=$("code").value.trim().replace(/\s+/g,"");if([...c].length<3){$("roomSt").textContent="3文字以上";return}S.host=false;S.me=2;boot(false,c)};
 $("okPlace").onclick=lockPlace;
@@ -615,7 +648,7 @@ $("flip").onclick=()=>{
 };
 $("again").onclick=()=>{if(S.mode!=="pvp"){goAgain();return}if(S.votes[S.me])return;S.votes[S.me]=true;$("again").textContent="相手待ち";send({type:"vote",who:S.me});if(S.host&&S.votes[1]&&S.votes[2]){send({type:"goAgain"});goAgain()}};
 bootChat(function(text){try{if(S.conn&&S.conn.open)S.conn.send({type:"chat",text:text})}catch(e){}});
-$("home").onclick=()=>{saveShinriHub();if(S.mode==="pvp")shinriHangup(true);resetBoard();show("mode");$("mode").style.display="flex"};
+$("home").onclick=()=>{hardStopSounds();saveShinriHub();if(S.mode==="pvp")shinriHangup(true);resetBoard();show("mode");$("mode").style.display="flex"};
 $("retry").onclick=()=>$("ask").classList.add("on");
 $("askYes").onclick=()=>{$("ask").classList.remove("on");$("home").onclick()};
 $("askNo").onclick=()=>$("ask").classList.remove("on");
