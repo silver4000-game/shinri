@@ -3,7 +3,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <!-- layout: safari-bar-lock-20261004 -->
-<meta name="shinri-rev" content="20261007a-sfx-stop">
+<meta name="shinri-rev" content="20261011a-rules-illust">
 <script>
 (function(){
   var nav=navigator, mm=window.matchMedia;
@@ -18,8 +18,8 @@
   document.documentElement.style.setProperty('--safari-bar', bar+'px');
 })();
 </script>
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261007a">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=20261007a">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261011a">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=20261011a">
 <title>究極の心理戦</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap&v=20261004d" rel="stylesheet">
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -103,7 +103,31 @@ input{width:min(92vw,280px);padding:12px;border-radius:12px;border:1px solid #e8
 .box{background:#1a140c;border:2px solid #e8c36a;border-radius:16px;padding:16px;text-align:center;width:min(92vw,340px)}
 #first .w{font-size:44px;font-weight:900;padding:12px 28px;border:3px solid currentColor;border-radius:16px}
 #first .w.first{color:#ffb347}#first .w.second{color:#7a8cff}#first .w.draw{color:#e8c36a}
-#rules{justify-content:center;padding-top:24px;overflow:auto}
+#rules{justify-content:flex-start;padding-top:max(16px,env(safe-area-inset-top));padding-bottom:max(16px,env(safe-area-inset-bottom));overflow:auto;-webkit-overflow-scrolling:touch}
+#rules h1{margin:4px 0 6px;flex:none}#rules>button{margin-top:12px;flex:none}
+.ruleHead{margin:24px 0 6px;font-weight:900;font-size:15px;color:#e8c36a;text-align:center}
+.ruleSteps{margin:8px 0 12px}
+.ruleStep{display:flex;align-items:flex-start;gap:6px;margin:8px 0}
+.ruleNum{flex:none;font-weight:900;font-size:15px;color:#e8c36a;min-width:1.2em;line-height:1.55}
+.ruleStepBody{flex:1;min-width:0;line-height:1.55}
+.ruleRow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0;padding:8px;background:#0a181066;border-radius:12px;border:1px solid #e8c36a33}
+.ruleArt{flex:none;display:flex;flex-wrap:wrap;gap:4px;align-items:center;max-width:100%}
+.ruleTxt{flex:1;min-width:min(100%,140px);line-height:1.55;text-align:center}
+.ruleNo{color:#ff4d4d;font-weight:900}.ruleYes{color:#3ddc6a;font-weight:900}.ruleGold{color:#e8c36a;font-weight:900}
+.ruleArr{color:#e8c36a;font-weight:900;font-size:13px}
+.rDie{width:30px;height:30px;border-radius:7px;background:#f7f1e3;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:4px;box-sizing:border-box;box-shadow:inset 0 -2px 0 #0003}
+.rDie i{width:5px;height:5px;border-radius:50%;background:#1a1208;place-self:center}
+.rDie i.o{visibility:hidden}.rDie.lk{background:#ffe08a;box-shadow:0 0 8px #ffd34d}
+.rChip{width:24px;height:24px;border-radius:50%;background:#1d4e89;box-shadow:inset 0 0 0 3px #d9e7ff,inset 0 0 0 7px #1d4e89,inset 0 0 0 9px #d9e7ff;display:inline-block}
+.rChip.c{background:#8b1e28;box-shadow:inset 0 0 0 3px #ffd4d7,inset 0 0 0 7px #8b1e28,inset 0 0 0 9px #ffd4d7}
+.rTrack{display:flex;gap:2px}.rTrack b{width:18px;height:22px;border-radius:4px;background:#124a2c;border:1px solid #e8c36a44;display:flex;align-items:center;justify-content:center;font-size:11px}
+.rTrack b.g1{background:#1a3f66}.rTrack b.g2{background:#5a2026}.rTrack b.p::after{content:"";width:10px;height:10px;border-radius:50%;background:#e8c36a}
+.rCard{width:28px;height:38px;border-radius:5px;background:#f7f1e3;color:#1a1208;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;box-shadow:inset 0 -2px 0 #0002}
+.rCard.bk{background:repeating-linear-gradient(45deg,#2a5a7a,#2a5a7a 4px,#1d4060 4px,#1d4060 8px);border:1.5px solid #d9e7ff}
+.rSlots{display:flex;gap:3px}.rSlot{display:flex;flex-direction:column;align-items:center;gap:3px}
+.rLab{min-width:34px;padding:2px 3px;border-radius:5px;background:#0a1810;border:1px solid #e8c36a77;color:#e8c36a;font-weight:900;font-size:11px;text-align:center}
+.rLab.w{background:#e8c36a;color:#1a1208}
+
 .rules-body{width:min(92vw,360px);font-size:13px;line-height:1.55;text-align:left}
 #ask{display:none;position:fixed;inset:0;background:#000c;z-index:100;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 #ask.on{display:flex}
@@ -144,14 +168,20 @@ input{width:min(92vw,280px);padding:12px;border-radius:12px;border:1px solid #e8
 <div class="hero"><div class="card back"></div><div class="card back"></div><div class="card back"></div><div class="card back"></div><div class="card back"></div></div>
 <div class="ui"><div class="row"><button data-mode="pvp">対人戦</button><button data-mode="cpu">コンピュータ戦</button></div><button id="btnRules" style="margin-top:14px;min-height:36px;font-size:13px">ルール説明</button></div></section>
 <section id="rules"><h1>ルール</h1><div class="rules-body">
-<p>・1〜5のカードを、手前の5枠に伏せて置く。</p>
-<p>・枠の配当は左からランダムに決まる。</p>
-<p>・それぞれの枠に3段階の配当が用意されており、<br>　低い数字から 60% / 30% / 10%の確率で停止する。</p>
-<p>・数字は大きい方が強い。ただし 1 は 5 に勝てる。</p>
-<p>・左から3枠目までの数字は数字カードの強弱で上回ったプレイヤーがその点数を仮で得る。</p>
-<p>・左から4枠目の倍率の枠は数字カードの強弱で上回ったプレイヤーがその倍率を仮で得る。</p>
-<p>・WIN の枠の数字カードの強弱が上回ったプレイヤーがこのゲームの勝者となる。</p>
-<p>・勝者は仮で獲得していたポイントや倍率を獲得する。</p>
+<div class="ruleHead" style="margin-top:6px">ー流れー</div>
+<div class="ruleRow"><div class="ruleArt"><span class="rCard">1</span><span class="rCard">2</span><span class="rCard">3</span><span class="rCard">4</span><span class="rCard">5</span></div><div class="ruleTxt">1〜5のカードを<br>5つの枠に<span class="ruleGold">ふせて置く</span></div></div>
+<div class="ruleRow" style="justify-content:center"><div class="rSlots"><div class="rSlot"><span class="rLab">100</span><span class="rCard bk"></span></div><div class="rSlot"><span class="rLab">300</span><span class="rCard bk"></span></div><div class="rSlot"><span class="rLab">500</span><span class="rCard bk"></span></div><div class="rSlot"><span class="rLab">×2</span><span class="rCard bk"></span></div><div class="rSlot"><span class="rLab w">WIN</span><span class="rCard bk"></span></div></div><div class="ruleTxt" style="flex-basis:100%">左から順にめくって勝負</div></div>
+<div class="ruleHead">ー強さー</div>
+<div class="ruleRow"><div class="ruleArt"><span class="rCard">4</span><span class="ruleArr">＞</span><span class="rCard">2</span></div><div class="ruleTxt">大きい数字が<span class="ruleYes">勝ち</span></div></div>
+<div class="ruleRow"><div class="ruleArt"><span class="rCard">1</span><span class="ruleArr">＞</span><span class="rCard">5</span></div><div class="ruleTxt">ただし<span class="ruleNo">1は5に勝つ</span></div></div>
+<div class="ruleHead">ー枠ー</div>
+<div class="ruleRow"><div class="ruleArt"><span class="rLab">100</span><span class="rLab">300</span><span class="rLab">500</span></div><div class="ruleTxt">勝つと<span class="ruleGold">点数</span>をもらう</div></div>
+<div class="ruleRow"><div class="ruleArt"><span class="rLab">×2</span></div><div class="ruleTxt">勝つと<span class="ruleGold">倍率</span>をもらう</div></div>
+<div class="ruleRow"><div class="ruleArt"><span class="rLab w">WIN</span></div><div class="ruleTxt">ここで勝った人だけが<br>点数を<span class="ruleYes">もらえる</span></div></div>
+<div class="ruleHead">ー枠の数字ー</div>
+<div class="ruleRow"><div class="ruleArt"><span class="rLab">60%</span><span class="rLab">30%</span><span class="rLab">10%</span></div><div class="ruleTxt">毎回ランダムに決まる<br>大きい数字ほど出にくい</div></div>
+<div class="ruleHead">ー例ー</div>
+<div class="ruleRow"><div class="ruleArt"><span class="rLab">100</span><span class="rLab">500</span><span class="rLab">×2</span><span class="rLab w">WIN</span></div><div class="ruleTxt">(100＋500)×2<br>＝<span class="ruleGold">1200点</span></div></div>
 </div><button id="rulesBack">戻る</button></section>
 <section id="room"><h1>部屋</h1><p class="hint">合言葉は3文字以上</p><input id="code" maxlength="8" placeholder="あいことば" /><div class="row" style="margin-top:10px"><button id="mk">部屋を作る</button><button id="jn">入る</button></div><p class="hint" id="roomSt"></p><button id="roomBack" style="margin-top:14px">戻る</button></section>
 <section id="game">
