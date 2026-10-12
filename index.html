@@ -3,7 +3,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <!-- layout: safari-bar-lock-20261004 -->
-<meta name="shinri-rev" content="20261011a-rules-illust">
+<meta name="shinri-rev" content="20261013a-opp-blue">
 <script>
 (function(){
   var nav=navigator, mm=window.matchMedia;
@@ -81,6 +81,7 @@ input{width:min(92vw,280px);padding:12px;border-radius:12px;border:1px solid #e8
 .card{width:50px;height:72px;border-radius:8px;background:#f7f1e6;color:#1a1208;border:2px solid #c8b89a;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:26px;flex:none;transform:none}
 .card.back{background:#6a1830;color:#e8c36a;font-size:16px;position:relative}
 .card.back::after{content:"◆"}
+.card.back.opp{background:#1d4e89;color:#d9e7ff;border-color:#7ab0ff}
 .card.back.peek::after{content:none}
 .card.back.peek{color:rgba(244,234,208,.42);font-size:28px}
 .my-pts{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);min-width:72px;padding:4px 12px;border:2px solid #e8c36a;border-radius:12px;background:#0a241ccc;text-align:center;z-index:5}
@@ -123,7 +124,9 @@ input{width:min(92vw,280px);padding:12px;border-radius:12px;border:1px solid #e8
 .rTrack{display:flex;gap:2px}.rTrack b{width:18px;height:22px;border-radius:4px;background:#124a2c;border:1px solid #e8c36a44;display:flex;align-items:center;justify-content:center;font-size:11px}
 .rTrack b.g1{background:#1a3f66}.rTrack b.g2{background:#5a2026}.rTrack b.p::after{content:"";width:10px;height:10px;border-radius:50%;background:#e8c36a}
 .rCard{width:28px;height:38px;border-radius:5px;background:#f7f1e3;color:#1a1208;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;box-shadow:inset 0 -2px 0 #0002}
-.rCard.bk{background:repeating-linear-gradient(45deg,#2a5a7a,#2a5a7a 4px,#1d4060 4px,#1d4060 8px);border:1.5px solid #d9e7ff}
+.rCard.mk{background:#6a1830;border:1.5px solid #c8b89a;color:#e8c36a;font-size:11px}.rCard.mk::after{content:"◆"}
+.rWho{font-size:11px;font-weight:900;color:#e8c36a;text-align:center}.rVs{display:flex;flex-direction:column;align-items:center;gap:2px}
+.rCard.bk{background:#1d4e89;border:1.5px solid #7ab0ff;color:#d9e7ff;font-size:11px}.rCard.bk::after{content:"◆"}
 .rSlots{display:flex;gap:3px}.rSlot{display:flex;flex-direction:column;align-items:center;gap:3px}
 .rLab{min-width:34px;padding:2px 3px;border-radius:5px;background:#0a1810;border:1px solid #e8c36a77;color:#e8c36a;font-weight:900;font-size:11px;text-align:center}
 .rLab.w{background:#e8c36a;color:#1a1208}
@@ -170,10 +173,10 @@ input{width:min(92vw,280px);padding:12px;border-radius:12px;border:1px solid #e8
 <section id="rules"><h1>ルール</h1><div class="rules-body">
 <div class="ruleHead" style="margin-top:6px">ー流れー</div>
 <div class="ruleRow"><div class="ruleArt"><span class="rCard">1</span><span class="rCard">2</span><span class="rCard">3</span><span class="rCard">4</span><span class="rCard">5</span></div><div class="ruleTxt">1〜5のカードを<br>5つの枠に<span class="ruleGold">ふせて置く</span></div></div>
-<div class="ruleRow" style="justify-content:center"><div class="rSlots"><div class="rSlot"><span class="rLab">100</span><span class="rCard bk"></span></div><div class="rSlot"><span class="rLab">300</span><span class="rCard bk"></span></div><div class="rSlot"><span class="rLab">500</span><span class="rCard bk"></span></div><div class="rSlot"><span class="rLab">×2</span><span class="rCard bk"></span></div><div class="rSlot"><span class="rLab w">WIN</span><span class="rCard bk"></span></div></div><div class="ruleTxt" style="flex-basis:100%">左から順にめくって勝負</div></div>
+<div class="ruleRow" style="justify-content:center;flex-direction:column;gap:4px"><div class="rWho">相手</div><div class="rSlots"><span class="rCard bk"></span><span class="rCard bk"></span><span class="rCard bk"></span><span class="rCard bk"></span><span class="rCard bk"></span></div><div class="rSlots"><span class="rLab" style="width:28px;min-width:28px;box-sizing:border-box;padding:2px 0">100</span><span class="rLab" style="width:28px;min-width:28px;box-sizing:border-box;padding:2px 0">300</span><span class="rLab" style="width:28px;min-width:28px;box-sizing:border-box;padding:2px 0">500</span><span class="rLab" style="width:28px;min-width:28px;box-sizing:border-box;padding:2px 0">×2</span><span class="rLab w" style="width:28px;min-width:28px;box-sizing:border-box;padding:2px 0">WIN</span></div><div class="rSlots"><span class="rCard mk"></span><span class="rCard mk"></span><span class="rCard mk"></span><span class="rCard mk"></span><span class="rCard mk"></span></div><div class="rWho">自分</div><div class="ruleTxt">左から順に<span class="ruleGold">同時にめくって</span>勝負</div></div>
 <div class="ruleHead">ー強さー</div>
-<div class="ruleRow"><div class="ruleArt"><span class="rCard">4</span><span class="ruleArr">＞</span><span class="rCard">2</span></div><div class="ruleTxt">大きい数字が<span class="ruleYes">勝ち</span></div></div>
-<div class="ruleRow"><div class="ruleArt"><span class="rCard">1</span><span class="ruleArr">＞</span><span class="rCard">5</span></div><div class="ruleTxt">ただし<span class="ruleNo">1は5に勝つ</span></div></div>
+<div class="ruleRow"><div class="ruleArt"><div class="rVs"><span class="rCard">4</span><span class="rWho">自分</span></div><span class="ruleArr">VS</span><div class="rVs"><span class="rCard">2</span><span class="rWho">相手</span></div><span class="ruleArr">→</span><span class="ruleYes">勝ち</span></div><div class="ruleTxt">大きい数字が<span class="ruleYes">勝ち</span></div></div>
+<div class="ruleRow"><div class="ruleArt"><div class="rVs"><span class="rCard">1</span><span class="rWho">自分</span></div><span class="ruleArr">VS</span><div class="rVs"><span class="rCard">5</span><span class="rWho">相手</span></div><span class="ruleArr">→</span><span class="ruleYes">勝ち</span></div><div class="ruleTxt">ただし<span class="ruleNo">1は5に勝つ</span></div></div>
 <div class="ruleHead">ー枠ー</div>
 <div class="ruleRow"><div class="ruleArt"><span class="rLab">100</span><span class="rLab">300</span><span class="rLab">500</span></div><div class="ruleTxt">勝つと<span class="ruleGold">点数</span>をもらう</div></div>
 <div class="ruleRow"><div class="ruleArt"><span class="rLab">×2</span></div><div class="ruleTxt">勝つと<span class="ruleGold">倍率</span>をもらう</div></div>
@@ -377,6 +380,7 @@ function renderSlots(){
         const peek = !face && mine && (S.phase==="flip"||S.phase==="place");
         const c=elCard(face||peek?v:null, !face);
         if(peek){c.classList.add("peek");c.textContent=v}
+        if(!face&&!mine)c.classList.add("opp");
         if(shown){const r=beats(S.row[S.me][i],S.row[opp][i]);c.classList.add(r===0?"lose":((mine?r>0:r<0)?"win":"lose"))}
         sl.appendChild(c);
       }
