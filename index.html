@@ -3,7 +3,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <!-- layout: safari-bar-lock-20261004 -->
-<meta name="shinri-rev" content="20261013m-flip-center">
+<meta name="shinri-rev" content="20261013n-flip-label">
 <script>
 
 /* UI tap sound: same as Dorokei sfxTap (sine 540Hz, 48ms, vol 0.028) */
@@ -431,7 +431,7 @@ function render(){
   $("flip").style.display=S.phase==="flip"?"inline-block":"none";
   $("okPlace").disabled=!(S.phase==="place"&&!S.spinLabs&&S.row[S.me].every(v=>v!=null)&&!S.ready[S.me]);
   $("flip").disabled=!(S.phase==="flip"&&S.idx<5&&!S.busy);
-  if(S.phase==="flip")$("flip").textContent=S.idx>=4?"結果へ":"めくる";
+  if(S.phase==="flip")$("flip").textContent=(S.idx>=4&&!S.busy)?"結果へ":"めくる";
   if(S.phase==="place") if($("info"))$("info").textContent=S.ready[S.me]?"相手の配置待ち":"手札を選んで枠をタップ";
   else if(S.phase==="flip" && $("info")) $("info").textContent="";
 }
@@ -581,7 +581,7 @@ function onNet(m){
   if(m.type==="flipVote"){S.flipVote=S.flipVote||{1:false,2:false};S.flipVote[S.me===1?2:1]=true;if(S.flipVote[1]&&S.flipVote[2]){S.flipVote={1:false,2:false};if(S.idx>=4){if(S.host)send({type:"goResult"});endRound()}else if(S.host)doFlip()}return}
   if(m.type==="goResult"){endRound();return}
   if(m.type==="wantFlip"&&S.host){doFlip();return}
-  if(m.type==="flipTo"){if(S.host)return;if(m.idx===S.idx)return;S.idx=m.idx;S.open[S.idx]=1;sfxFlip();render();later(()=>{applyCol(S.idx);S.busy=false;render()},280);return}
+  if(m.type==="flipTo"){if(S.host)return;if(m.idx===S.idx)return;S.idx=m.idx;S.open[S.idx]=1;S.busy=true;sfxFlip();render();later(()=>{applyCol(S.idx);S.busy=false;render()},280);return}
   if(m.type==="vote"){S.votes[m.who]=true;if(S.host&&S.votes[1]&&S.votes[2]){send({type:"goAgain"});goAgain()}return}
   if(m.type==="goAgain"){if(!S.host)goAgain();return}
 }
