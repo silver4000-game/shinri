@@ -3,7 +3,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <!-- layout: safari-bar-lock-20261004 -->
-<meta name="shinri-rev" content="20261013j-redo-tap">
+<meta name="shinri-rev" content="20261013k-spin-delay">
 <script>
 
 /* UI tap sound: same as Dorokei sfxTap (sine 540Hz, 48ms, vol 0.028) */
@@ -557,12 +557,14 @@ banner("配当抽選中",true);
     };
     tick();
   }
+  later(()=>{ if(!alive(g)) return;
   spinCol(0,()=>spinCol(1,()=>spinCol(2,()=>spinCol(3,()=>{
     if(!alive(g)) return;
     S.spinLabs=false; S.phase="place";
 banner("配置スタート");
     render();
   }))));
+  }, 200);
 }
 function startMatch(){resetBoard();if(!(S.mode==="pvp"&&!S.host)){S.stakes=rollStakes();if(S.mode==="pvp"&&S.host)send({type:"stakes",stakes:S.stakes})}clearFx();show("game");render();if(S.stakes)spinStakeLabs()}
 function send(a){if(S.conn&&S.conn.open)S.conn.send(a)}
