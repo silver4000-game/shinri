@@ -3,7 +3,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <!-- layout: safari-bar-lock-20261004 -->
-<meta name="shinri-rev" content="20261013k-spin-delay">
+<meta name="shinri-rev" content="20261013l-history-btn">
 <script>
 
 /* UI tap sound: same as Dorokei sfxTap (sine 540Hz, 48ms, vol 0.028) */
@@ -61,7 +61,7 @@ html.no-bar:has(#result.on),
 html.no-bar:has(#result.on) body{background:#0a100c}
 html.no-bar #first.on,
 html.no-bar #result.on{background:#0a100c}
-html.no-bar #chatBtn{bottom:calc(18px + var(--safari-bar, 83px))}
+html.no-bar #chatBtn,html.no-bar #lastBtn{bottom:calc(18px + var(--safari-bar, 83px))}
 html.no-bar #chatPanel{bottom:calc(58px + var(--safari-bar, 83px))}
 
 @media (display-mode: standalone) and (pointer: coarse),
@@ -74,7 +74,7 @@ html.no-bar #chatPanel{bottom:calc(58px + var(--safari-bar, 83px))}
   html:has(#result.on) body{background:#0a100c}
   #first.on,
   #result.on{background:#0a100c}
-  #chatBtn{bottom:calc(18px + var(--safari-bar, 83px))}
+  #chatBtn,#lastBtn{bottom:calc(18px + var(--safari-bar, 83px))}
   #chatPanel{bottom:calc(58px + var(--safari-bar, 83px))}
 
 }
@@ -161,7 +161,7 @@ input{width:min(92vw,280px);padding:12px;border-radius:12px;border:1px solid #e8
 #ask{display:none;position:fixed;inset:0;background:#000c;z-index:100;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 #ask.on{display:flex}
 .info{font-size:13px;opacity:.9;margin:4px 0;text-align:center;min-height:18px}
-#lastBtn{position:absolute;left:8px;bottom:8px;z-index:8;min-height:44px;min-width:108px;padding:8px 12px;font-size:14px;display:none}
+#lastBtn{position:fixed;left:10px;bottom:18px;z-index:80;min-height:46px;min-width:88px;width:92px;box-sizing:border-box;font-size:13px;white-space:nowrap;font-weight:800;padding:0 6px;border:2px solid #e8c36a;background:linear-gradient(#4a3210,#2c1c08);color:#e8c36a;border-radius:12px;display:none}
 #lastView{display:none;position:absolute;inset:8px;background:#0a1810f2;border:2px solid #e8c36a;border-radius:12px;z-index:80;flex-direction:column;align-items:center;justify-content:stretch;gap:6px;padding:0}
 #lastView.on{display:flex}
 #lastView .lastActs{position:static;transform:none;display:flex;flex-direction:row;align-items:center;gap:28px;justify-content:center;margin-top:16px}
