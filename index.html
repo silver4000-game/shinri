@@ -3,7 +3,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <!-- layout: safari-bar-lock-20261004 -->
-<meta name="shinri-rev" content="20261013f-rules-plain">
+<meta name="shinri-rev" content="20261013g-round-box">
 <script>
 (function(){
   var nav=navigator, mm=window.matchMedia;
@@ -84,6 +84,7 @@ input{width:min(92vw,280px);padding:12px;border-radius:12px;border:1px solid #e8
 .card.back.opp{background:#1d4e89;color:#d9e7ff;border-color:#7ab0ff}
 .card.back.peek::after{content:none}
 .card.back.peek{color:rgba(244,234,208,.42);font-size:28px}
+#oppName{box-sizing:border-box;display:flex;align-items:center;justify-content:center;min-height:40px;width:100px;padding:0 8px;border:2px solid #e8c36a;border-radius:12px;background:#0a241ccc;color:#e8c36a;font-weight:800;font-size:13px;white-space:nowrap;line-height:1}
 .my-pts{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);min-width:72px;padding:4px 12px;border:2px solid #e8c36a;border-radius:12px;background:#0a241ccc;text-align:center;z-index:5}
 .pred{position:absolute;left:50%;font-size:24px;font-weight:900;color:#f4ead0;opacity:.28;transform:translateX(-50%);pointer-events:none;letter-spacing:.04em}
 .pred.me{bottom:18%;line-height:1}
