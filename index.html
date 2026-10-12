@@ -3,8 +3,31 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <!-- layout: safari-bar-lock-20261004 -->
-<meta name="shinri-rev" content="20261013h-rules-example">
+<meta name="shinri-rev" content="20261013i-redo-tap">
 <script>
+
+/* UI tap sound: same as Dorokei sfxTap (sine 540Hz, 48ms, vol 0.028) */
+let uiTapCtx;
+function uiTapBeep(freq,dur,type,vol){
+  try{
+    uiTapCtx=uiTapCtx||new (window.AudioContext||window.webkitAudioContext)();
+    if(uiTapCtx.state==="closed") uiTapCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(uiTapCtx.state==="suspended") uiTapCtx.resume();
+    const ctx=uiTapCtx, o=ctx.createOscillator(), g=ctx.createGain();
+    const now=ctx.currentTime;
+    const d=Math.max(0.03,(dur||50)/1000);
+    const v=vol||0.03;
+    o.type=type||"sine";
+    o.frequency.setValueAtTime(freq, now);
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.exponentialRampToValueAtTime(v, now+0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, now+d);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(now); o.stop(now+d+0.02);
+  }catch(e){}
+}
+function uiTap(){ uiTapBeep(540,48,"sine",0.028); }
+document.addEventListener("click",function(e){ const b=e.target&&e.target.closest&&e.target.closest("button"); if(b&&!b.disabled) uiTap(); },true);
 (function(){
   var nav=navigator, mm=window.matchMedia;
   function q(s){return !!(mm&&mm.call(window,s).matches)}
