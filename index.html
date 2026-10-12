@@ -3,7 +3,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <!-- layout: safari-bar-lock-20261004 -->
-<meta name="shinri-rev" content="20261013a-opp-blue">
+<meta name="shinri-rev" content="20261013b-pred-center">
 <script>
 (function(){
   var nav=navigator, mm=window.matchMedia;
@@ -86,7 +86,8 @@ input{width:min(92vw,280px);padding:12px;border-radius:12px;border:1px solid #e8
 .card.back.peek{color:rgba(244,234,208,.42);font-size:28px}
 .my-pts{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);min-width:72px;padding:4px 12px;border:2px solid #e8c36a;border-radius:12px;background:#0a241ccc;text-align:center;z-index:5}
 .pred{position:absolute;left:50%;font-size:24px;font-weight:900;color:#f4ead0;opacity:.28;transform:translateX(-50%);pointer-events:none;letter-spacing:.04em}
-.pred.me{bottom:18%}
+.pred.me{bottom:18%;line-height:1}
+.pred.me.placed{bottom:auto;transform:translate(-50%,-50%)}
 .pred.opp{top:14%}
 .pred.on{opacity:1}
 .hand .card.sel{outline:3px solid #4dffb5;transform:translateY(-6px)}
@@ -361,12 +362,16 @@ function show(id){ try{setTimeout(syncChatVis,0)}catch(e){} ["mode","rules","roo
 function beats(a,b){if(a===b)return 0;if(a===1&&b===5)return 1;if(b===1&&a===5)return -1;return a>b?1:-1}
 function pid(c){return"shinri"+[...c.toLowerCase()].map(ch=>ch.codePointAt(0).toString(36)).join("").slice(0,28)}
 function banner(t,hold){const el=$("banner");if(!t){el.classList.remove("on","hold");el.textContent="";return}el.textContent=t;el.classList.remove("on","hold");void el.offsetWidth;el.classList.add("on");if(hold)el.classList.add("hold")}
+
+function placePredMe(){try{const b=document.querySelector("#game .board"),p=$("predMe"),r=$("rowMe"),m=document.querySelector("#game .my-pts");if(!b||!p||!r||!m||!b.offsetHeight)return;const sl=r.querySelector(".slot")||r;const bb=b.getBoundingClientRect(),y1=sl.getBoundingClientRect().bottom,y2=m.getBoundingClientRect().top;if(y2<=y1)return;p.style.top=((y1+y2)/2-bb.top-b.clientTop)+"px";p.classList.add("placed")}catch(e){}}
+window.addEventListener("resize",()=>requestAnimationFrame(placePredMe));
+try{new ResizeObserver(()=>placePredMe()).observe(document.querySelector("#game .board"))}catch(e){}
 function clearFx(){banner("");const a=$("predMe"),b=$("predOpp");if(a){a.textContent="0";a.classList.remove("on")}if(b){b.textContent="0";b.classList.remove("on")}}
 function paintDiff(){const d=S.totals[S.me]||0;
   const sc=$("sc");if(sc){sc.textContent=d>0?"+"+d:d===0?"±0":String(d);sc.className="diff "+(d>0?"plus":d<0?"minus":"zero")}
 }
 function elCard(n,back,cls){const d=document.createElement("div");d.className="card"+(back?" back":"")+(cls?" "+cls:"");if(!back&&n!=null)d.textContent=n;return d}
-function renderSlots(){
+function renderSlots(){requestAnimationFrame(placePredMe);
   const opp=S.me===1?2:1;
   [["rowOpp",opp,true],["rowMe",S.me,false]].forEach(([id,who,flip])=>{
     const row=$(id);row.innerHTML="";
