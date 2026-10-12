@@ -3,7 +3,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <!-- layout: safari-bar-lock-20261004 -->
-<meta name="shinri-rev" content="20261013b-pred-center">
+<meta name="shinri-rev" content="20261013c-round-label">
 <script>
 (function(){
   var nav=navigator, mm=window.matchMedia;
@@ -189,7 +189,7 @@ input{width:min(92vw,280px);padding:12px;border-radius:12px;border:1px solid #e8
 </div><button id="rulesBack">戻る</button></section>
 <section id="room"><h1>部屋</h1><p class="hint">合言葉は3文字以上</p><input id="code" maxlength="8" placeholder="あいことば" /><div class="row" style="margin-top:10px"><button id="mk">部屋を作る</button><button id="jn">入る</button></div><p class="hint" id="roomSt"></p><button id="roomBack" style="margin-top:14px">戻る</button></section>
 <section id="game">
-<div class="topbar"><div><b id="oppName">相手</b></div><div><button id="retry" type="button" style="min-height:40px;font-size:13px">やり直し</button></div></div>
+<div class="topbar"><div><b id="oppName">1戦目</b></div><div><button id="retry" type="button" style="min-height:40px;font-size:13px">やり直し</button></div></div>
 <div class="board">
   <div class="lanes">
     <div class="slotrow" id="rowOpp"></div>
@@ -404,7 +404,7 @@ function renderHand(){
   });
 }
 function render(){
-  $("oppName").textContent=S.mode==="cpu"?"コンピュータ":"相手";
+  $("oppName").textContent=((S.hist||[]).length-(S.rnoBase||0)+1)+"戦目";
   renderSlots();renderHand();paintDiff();paintPred();
   if($("lastBtn")) $("lastBtn").style.display=(S.hist&&S.hist.length)?"block":"none";
   $("okPlace").style.display=S.phase==="place"?"inline-block":"none";
@@ -663,7 +663,7 @@ function boot(host,code){
     }
   });
 }
-document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{S.mode=b.dataset.mode;$("mode").style.display="none";if(S.mode==="pvp")show("room");else{S.me=1;S.host=true;startMatch()}});
+document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{S.mode=b.dataset.mode;S.rnoBase=(S.hist||[]).length;$("mode").style.display="none";if(S.mode==="pvp")show("room");else{S.me=1;S.host=true;startMatch()}});
 $("btnRules").onclick=()=>{$("mode").style.display="none";show("rules")};
 $("rulesBack").onclick=()=>{show("mode");$("mode").style.display="flex"};
 $("roomBack").onclick=()=>{hardStopSounds();if(S.mode==="pvp")shinriHangup(true);show("mode");$("mode").style.display="flex"};
