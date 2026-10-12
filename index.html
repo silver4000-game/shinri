@@ -3,7 +3,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <!-- layout: safari-bar-lock-20261004 -->
-<meta name="shinri-rev" content="20261013l-history-btn">
+<meta name="shinri-rev" content="20261013m-flip-center">
 <script>
 
 /* UI tap sound: same as Dorokei sfxTap (sine 540Hz, 48ms, vol 0.028) */
@@ -161,7 +161,7 @@ input{width:min(92vw,280px);padding:12px;border-radius:12px;border:1px solid #e8
 #ask{display:none;position:fixed;inset:0;background:#000c;z-index:100;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 #ask.on{display:flex}
 .info{font-size:13px;opacity:.9;margin:4px 0;text-align:center;min-height:18px}
-#lastBtn{position:fixed;left:10px;bottom:18px;z-index:80;min-height:46px;min-width:88px;width:92px;box-sizing:border-box;font-size:13px;white-space:nowrap;font-weight:800;padding:0 6px;border:2px solid #e8c36a;background:linear-gradient(#4a3210,#2c1c08);color:#e8c36a;border-radius:12px;display:none}
+#lastBtn{position:fixed;left:10px;bottom:18px;z-index:80;min-height:46px;min-width:88px;width:92px;box-sizing:border-box;font-size:15px;white-space:nowrap;font-weight:800;padding:0 14px;border:2px solid #e8c36a;background:linear-gradient(#4a3210,#2c1c08);color:#e8c36a;border-radius:12px;display:none}
 #lastView{display:none;position:absolute;inset:8px;background:#0a1810f2;border:2px solid #e8c36a;border-radius:12px;z-index:80;flex-direction:column;align-items:center;justify-content:stretch;gap:6px;padding:0}
 #lastView.on{display:flex}
 #lastView .lastActs{position:static;transform:none;display:flex;flex-direction:row;align-items:center;gap:28px;justify-content:center;margin-top:16px}
@@ -217,7 +217,7 @@ input{width:min(92vw,280px);padding:12px;border-radius:12px;border:1px solid #e8
   <div class="pred me" id="predMe">0</div>
   <div class="my-pts"><span class="diff zero" id="sc">±0</span></div>
   <div class="banner" id="banner"></div>
-  <button id="lastBtn" type="button">過去の配置</button>
+  <button id="lastBtn" type="button">過去配置</button>
   <div id="lastView">
     <div class="topGap"><div id="lastHint"><span class="n">前回</span><span class="w">の配置</span></div></div>
     <div class="slotrow" id="lastOpp"></div>
@@ -420,10 +420,13 @@ function renderHand(){
     h.appendChild(c);
   });
 }
+function placeFlipBtn(){try{const f=$("flip"),g=$("game"),bd=document.querySelector("#game .board");if(!f||!g||!bd)return;f.style.transform="";if(S.phase!=="flip"||f.style.display==="none"||!g.classList.contains("on"))return;const fr=f.getBoundingClientRect(),y1=bd.getBoundingClientRect().bottom,y2=g.getBoundingClientRect().bottom;const d=Math.round((y1+y2)/2-(fr.top+fr.bottom)/2);f.style.transform="translateY("+d+"px)";}catch(e){}}
+window.addEventListener("resize",()=>requestAnimationFrame(placeFlipBtn));
 function render(){
   $("oppName").textContent=((S.hist||[]).length-(S.rnoBase||0)+1)+"戦目";
   renderSlots();renderHand();paintDiff();paintPred();
-  if($("lastBtn")) $("lastBtn").style.display=(S.hist&&S.hist.length)?"block":"none";
+  if($("lastBtn")){const hb=$("lastBtn"),hh=!!(S.hist&&S.hist.length);hb.style.display="block";hb.disabled=!hh;hb.style.opacity=hh?"":"0.35";}
+  requestAnimationFrame(placeFlipBtn);
   $("okPlace").style.display=S.phase==="place"?"inline-block":"none";
   $("flip").style.display=S.phase==="flip"?"inline-block":"none";
   $("okPlace").disabled=!(S.phase==="place"&&!S.spinLabs&&S.row[S.me].every(v=>v!=null)&&!S.ready[S.me]);
