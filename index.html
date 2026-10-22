@@ -193,7 +193,31 @@ input{width:min(92vw,280px);padding:12px;border-radius:12px;border:1px solid #e8
 .bubble.foe{background:#8b1e28ee;color:#fff;border:2px solid #ff8a96}
 @keyframes bub{0%{opacity:0;transform:scale(.86)}12%{opacity:1;transform:scale(1)}75%{opacity:1}100%{opacity:0}}
 
-</style></head><body>
+</style><!-- top-bar-color-20261022g -->
+<meta name="theme-color" content="#1a3e2d">
+<style>html,body{background-color:#1a3e2d}</style>
+<script>
+/* ホーム画面アプリ(iOS 26〜)の上の帯の色: ページの背景色と theme-color に合わせる（白いモヤを出さない） */
+(function(){
+  var d=document;
+  function rgb(c){var m=/rgba?\(([^)]+)\)/.exec(c||"");if(!m)return null;var a=m[1].split(",");if(a.length>3&&parseFloat(a[3])<0.5)return null;return "rgb("+a[0].trim()+","+a[1].trim()+","+a[2].trim()+")";}
+  function pick(){
+    var w=window.innerWidth,el=d.elementFromPoint(w/2,2);
+    for(;el&&el!==d.body&&el!==d.documentElement;el=el.parentElement){
+      var r=el.getBoundingClientRect();if(r.width<w*0.9||r.top>2)continue;
+      var c=rgb(getComputedStyle(el).backgroundColor);if(c)return c;
+    }
+    return rgb(getComputedStyle(d.documentElement).backgroundColor)||rgb(getComputedStyle(d.body).backgroundColor);
+  }
+  var meta,t=0;
+  function upd(){t=0;try{var c=pick();if(!c)return;if(!meta){meta=d.querySelector('meta[name="theme-color"]');if(!meta){meta=d.createElement("meta");meta.name="theme-color";d.head.appendChild(meta);}}if(meta.content!==c)meta.content=c;}catch(e){}}
+  function sch(){if(!t)t=setTimeout(upd,120);}
+  function go(){upd();try{new MutationObserver(sch).observe(d.documentElement,{attributes:true,subtree:true,attributeFilter:["class","style"]});}catch(e){}
+    window.addEventListener("resize",sch);window.addEventListener("pageshow",sch);d.addEventListener("visibilitychange",sch);}
+  if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",go);else go();
+})();
+</script>
+</head><body>
 <div id="app">
 <section id="mode" class="on"><h1>究極の心理戦</h1>
 <div class="hero"><div class="card back"></div><div class="card back"></div><div class="card back"></div><div class="card back"></div><div class="card back"></div></div>
