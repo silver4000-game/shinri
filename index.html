@@ -195,9 +195,10 @@ input{width:min(92vw,280px);padding:12px;border-radius:12px;border:1px solid #e8
 
 </style><!-- top-bar-color-20261022g -->
 <meta name="theme-color" content="#1a3e2d">
-<style>html,body{background-color:#1a3e2d;background-image:linear-gradient(#1a3e2d,rgba(26,62,45,0) 56px),radial-gradient(ellipse at center,#286848,#142c22)}</style>
+<style>html,body{background-color:#1a3e2d;background-image:linear-gradient(#1a3e2d,rgba(26,62,45,0) 56px),radial-gradient(ellipse at center,#286848,#142c22)}#iosTopStrip{position:fixed;top:0;left:0;right:0;height:11px;z-index:2147483647;pointer-events:none;background-color:#1a3e2d;-webkit-background-clip:text;background-clip:text}</style>
 <script>
-/* ホーム画面アプリ(iOS 26〜)の上の帯の色: ページの背景色と theme-color に合わせる（白いモヤを出さない） */
+/* ホーム画面アプリ(iOS 26〜)の上の帯: いちばん上に「色だけ持って何も描かない」fixed の細い帯（#iosTopStrip）を置く。
+   iOS はこの帯の背景色で上の帯をたいらに塗り、上のぼかし（モヤ）を出さない。色はその時の画面の背景に合わせる */
 (function(){
   var d=document;
   function rgb(c){var m=/rgba?\(([^)]+)\)/.exec(c||"");if(!m)return null;var a=m[1].split(",");if(a.length>3&&parseFloat(a[3])<0.5)return null;return "rgb("+a[0].trim()+","+a[1].trim()+","+a[2].trim()+")";}
@@ -209,10 +210,10 @@ input{width:min(92vw,280px);padding:12px;border-radius:12px;border:1px solid #e8
     }
     return rgb(getComputedStyle(d.documentElement).backgroundColor)||rgb(getComputedStyle(d.body).backgroundColor);
   }
-  var meta,t=0;
-  function upd(){t=0;try{var c=pick();if(!c)return;if(!meta){meta=d.querySelector('meta[name="theme-color"]');if(!meta){meta=d.createElement("meta");meta.name="theme-color";d.head.appendChild(meta);}}if(meta.content!==c)meta.content=c;}catch(e){}}
+  var meta,strip,t=0;
+  function upd(){t=0;try{var c=pick();if(!c)return;if(strip&&strip.style.backgroundColor!==c)strip.style.backgroundColor=c;if(!meta){meta=d.querySelector('meta[name="theme-color"]');if(!meta){meta=d.createElement("meta");meta.name="theme-color";d.head.appendChild(meta);}}if(meta.content!==c)meta.content=c;}catch(e){}}
   function sch(){if(!t)t=setTimeout(upd,120);}
-  function go(){upd();try{new MutationObserver(sch).observe(d.documentElement,{attributes:true,subtree:true,attributeFilter:["class","style"]});}catch(e){}
+  function go(){try{strip=d.getElementById("iosTopStrip");if(!strip){strip=d.createElement("div");strip.id="iosTopStrip";strip.setAttribute("aria-hidden","true");d.body.insertBefore(strip,d.body.firstChild);}}catch(e){}upd();try{new MutationObserver(sch).observe(d.documentElement,{attributes:true,subtree:true,attributeFilter:["class","style"]});}catch(e){}
     window.addEventListener("resize",sch);window.addEventListener("pageshow",sch);d.addEventListener("visibilitychange",sch);}
   if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",go);else go();
 })();
